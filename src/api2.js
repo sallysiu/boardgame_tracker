@@ -20,10 +20,11 @@ class App extends Component {
 			newState: []
 		}
 	}
-	
+
 
 	getGames = () => {
 
+		// getGameId = (searchQuery) => {
 		axios({
 			url: 'https://proxy.hackeryou.com',
 			dataResponse: 'json',
@@ -32,17 +33,16 @@ class App extends Component {
 				return Qs.stringify(params, { arrayFormat: 'brackets' })
 			},
 			params: {
-				reqUrl: "https://www.boardgamegeek.com/xmlapi/search",
+				reqUrl: "https://www.boardgamegeek.com//xmlapi/search",
 				params: {
-					// search: this.state.searchQuery,
-					search: "avalon",
-					// type: "boardgame"
+					query: this.state.searchQuery,
+					// query: "shadow",
+					type: "boardgame"
 				},
 				xmlToJSON: true
 			}
 		}).then((res) => {
-			// console.log(res)
-			const gameData = res.data.boardgames.boardgame
+			const gameData = res.data.items.item
 			// console.log(gameData)				
 
 			let gameIds = [];
@@ -50,12 +50,12 @@ class App extends Component {
 
 			// limit to finding only 10 games!!!!
 			for (let i = 0; i < gameData.length; i++) {
-				gameIds.push(gameData[i].objectid)
-				boardgameTitles.push(gameData[i].name.$t)
+				gameIds.push(gameData[i].id)
+				boardgameTitles.push(gameData[i].name.value)
 			}
-			console.log(gameIds)
-			console.log(boardgameTitles)
-			
+			// console.log(gameIds)
+			// console.log(boardgameTitles)
+
 
 
 			this.setState({
@@ -65,15 +65,72 @@ class App extends Component {
 			});
 
 			// console.log("hello", this.state.gameIds)
-	
-			// this.getGameData()
 
-			
+			this.getGameData()
+
+
 		})
 
+		// }	
 
 	}
 
+	getGameData = () => {
+
+		// this.setState({
+		// 	gameInfo : []
+		// })
+
+		// map through state id array
+		this.state.gameIds.map((id) => {
+			axios({
+				url: 'https://proxy.hackeryou.com',
+				dataResponse: 'json',
+				method: 'GET',
+				paramsSerializer: function (params) {
+					return Qs.stringify(params, { arrayFormat: 'brackets' })
+				},
+				params: {
+					reqUrl: `https://www.boardgamegeek.com/xmlapi2/thing?id=${id}`,
+					params: {
+						stats: 1,
+					},
+					xmlToJSON: true
+				}
+			})
+
+				.then((data) => {
+					console.log('returning', data)
+
+					const description = [];
+					// console.log(data.data.items.item.description)
+
+					description.push(data.data.items.item.description)
+
+
+					// working
+					const copyArray = Array.from(this.state.gameInfo);
+
+					copyArray.push(data.data.items.item);
+					// console.log(copyArray)
+
+					this.setState({
+						gameInfo: copyArray
+					})
+
+					this.getGameInfo();
+
+				})
+
+
+			return "cake"
+
+
+		})
+
+
+
+	}
 
 	getGameInfo2 = () => {
 		// const description = [];
@@ -82,16 +139,16 @@ class App extends Component {
 
 		this.state.gameInfo.map((game) => {
 			// console.log(game.id)
-		// 	console.log(game.name[0].value)
-		// 	console.log(game.description)
-		// 	description.push(game.description);
-		// 	return description;
+			// 	console.log(game.name[0].value)
+			// 	console.log(game.description)
+			// 	description.push(game.description);
+			// 	return description;
 
 			return 'muffin'
 		})
 		// console.log(description)
 
-		// const categories = [];
+		const categories = [];
 		// console.log(this.state.gameInfo)
 
 
@@ -110,7 +167,7 @@ class App extends Component {
 		// 	this.setState({
 		// 		categories: categories
 		// 	})
-			
+
 		// 	return 'cake'
 		// })
 
@@ -155,8 +212,8 @@ class App extends Component {
 			searchQuery: ""
 		})
 	}
-			
-	
+
+
 
 
 
@@ -167,11 +224,11 @@ class App extends Component {
 
 				<form action="" onSubmit={this.handleSubmit}>
 					<label htmlFor="searchQuery">Search for board games:</label>
-					<input 
-					onChange={this.handleChange} 
-					value={this.state.searchQuery} 
-					type="text" 
-					id="searchQuery"
+					<input
+						onChange={this.handleChange}
+						value={this.state.searchQuery}
+						type="text"
+						id="searchQuery"
 					/>
 					<input type="submit" value="Find games" />
 				</form>
@@ -185,7 +242,7 @@ class App extends Component {
 				gameInfo={this.state.newState}
 				/> */}
 
-		
+
 
 			</div>
 		);
