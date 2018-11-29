@@ -34,7 +34,7 @@ class App extends Component {
 					reqUrl: "https://www.boardgamegeek.com/xmlapi2/search",
 					params: {
 						// query: this.state.searchQuery,
-						query: "avalon",
+						query: "shadow",
 						type: "boardgame"
 					},
 					xmlToJSON: true
@@ -50,8 +50,8 @@ class App extends Component {
 					gameIds.push(gameData[i].id)
 					boardgameTitles.push(gameData[i].name.value)
 				}
-				console.log(gameIds)
-				console.log(boardgameTitles)
+				// console.log(gameIds)
+				// console.log(boardgameTitles)
 				
 
 
@@ -84,38 +84,46 @@ class App extends Component {
 					type: "boardgame",
 					marketplace: 1,
 					stats: 1,
+					versions: 1
 				},
 				xmlToJSON: true
 			}
 		}).then((data) => {
-			console.log('returning')
+			// console.log('returning')
 			// console.log(data)
 
-			const gameInfo2 = [];
-			gameInfo2.push(data.data.items.item);
+			const gameInfo = [];
+			gameInfo.push(data.data.items.item);
 
-			// let description = [];
-			// description.push(gameInfo.description)
-
+			console.log(gameInfo)
+			
 
 			this.setState({
-				gameInfo: gameInfo2,
+				gameInfo: gameInfo,
 				// description: description
 			})
 
-			console.log('hello')
+			// console.log('hello')
+
+			// this.getGameDescription();
 
 
 		})
 
 	}
 
+	getGameDescription = () => {
+		const description = [];
 
-
-
-	// https://www.boardgamegeek.com/xmlapi2/thing?id=1862
-
-
+		this.state.gameInfo.map((game) => {
+			// console.log(game.id)
+			console.log(game.name[0].value)
+			console.log(game.description)
+			description.push(game.description);
+			return description;
+		})
+		console.log(description)
+	}
 
 
 
@@ -130,9 +138,9 @@ class App extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 
-		// this.getGames();
+		this.getGames();
 
-		this.getGameInfo("1862");
+		this.getGameInfo("24068");
 
 		// clear the form
 		this.setState({
@@ -162,9 +170,9 @@ class App extends Component {
 
 
 				<Boardgame 
-				gameTitle={this.state.boardgamesTitles} 
-				gameId={this.state.gameIds} 
-				gameFound={this.state.boardgames}
+				// gameTitle={this.state.boardgamesTitles} 
+				// gameId={this.state.gameIds} 
+				// gameFound={this.state.boardgames}
 				gameInfo={this.state.gameInfo}
 				/>
 
