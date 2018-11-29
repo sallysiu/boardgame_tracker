@@ -12,12 +12,15 @@ class App extends Component {
 		this.state = {
 			searchQuery: "",
 			boardgames: [],
-			gameIds: []
+			boardgameTitles: [],
+			gameIds: [],
+			gameInfo: [],
+			description: [],
 		}
 	}
 	
 
-	getGame = () => {
+	getGames = () => {
 
 		// getGameId = (searchQuery) => {
 			axios({
@@ -30,32 +33,89 @@ class App extends Component {
 				params: {
 					reqUrl: "https://www.boardgamegeek.com/xmlapi2/search",
 					params: {
-						query: this.state.searchQuery,
-						// query: searchQuery,
+						// query: this.state.searchQuery,
+						query: "avalon",
 						type: "boardgame"
 					},
 					xmlToJSON: true
 				}
 			}).then((res) => {
-				// console.log(res)
 				const gameData = res.data.items.item
+				// console.log(gameData)				
+
+				let gameIds = [];
+				let boardgameTitles = [];
+
+				for (let i = 0; i < gameData.length; i++) {
+					gameIds.push(gameData[i].id)
+					boardgameTitles.push(gameData[i].name.value)
+				}
+				console.log(gameIds)
+				console.log(boardgameTitles)
 				
+
+
 				this.setState({
-					boardgames: res.data.items.item,
+					boardgamesTitles: boardgameTitles,
+					gameIds: gameIds,
+					boardgames: gameData
 				});
+		
 
-				console.log(gameData)
-
-				// let gameIds = [];
 				
-				// gamesIds.push(gameData.id)
-	
-	
 			})
-	
+
 		// }	
 
 	}
+
+	getGameInfo = (id) => {
+
+		axios({
+			url: 'https://proxy.hackeryou.com',
+			dataResponse: 'json',
+			method: 'GET',
+			paramsSerializer: function (params) {
+				return Qs.stringify(params, { arrayFormat: 'brackets' })
+			},
+			params: {
+				reqUrl: `https://www.boardgamegeek.com/xmlapi2/thing?id=${id}`,
+				params: {
+					type: "boardgame",
+					marketplace: 1,
+					stats: 1,
+				},
+				xmlToJSON: true
+			}
+		}).then((data) => {
+			console.log('returning')
+			// console.log(data)
+
+			const gameInfo2 = [];
+			gameInfo2.push(data.data.items.item);
+
+			// let description = [];
+			// description.push(gameInfo.description)
+
+
+			this.setState({
+				gameInfo: gameInfo2,
+				// description: description
+			})
+
+			console.log('hello')
+
+
+		})
+
+	}
+
+
+
+
+	// https://www.boardgamegeek.com/xmlapi2/thing?id=1862
+
+
 
 
 
@@ -70,7 +130,10 @@ class App extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 
-		this.getGame();
+		// this.getGames();
+
+		this.getGameInfo("1862");
+
 		// clear the form
 		this.setState({
 			searchQuery: ""
@@ -90,7 +153,7 @@ class App extends Component {
 					<label htmlFor="searchQuery">Search for board games:</label>
 					<input 
 					onChange={this.handleChange} 
-					value={this.state.searchQuery}
+					value={this.state.searchQuery} 
 					type="text" 
 					id="searchQuery"
 					/>
@@ -98,7 +161,12 @@ class App extends Component {
 				</form>
 
 
-				<Boardgame gameInfo={this.state.boardgames}/>
+				<Boardgame 
+				gameTitle={this.state.boardgamesTitles} 
+				gameId={this.state.gameIds} 
+				gameFound={this.state.boardgames}
+				gameInfo={this.state.gameInfo}
+				/>
 
 		
 
