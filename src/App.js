@@ -19,7 +19,8 @@ class App extends Component {
 			minplayers: [],
 			maxplayers: [],
 			rating: [],
-			categories: []
+			categories: [],
+			playtime: []
 		}
 	}
 	
@@ -38,7 +39,6 @@ class App extends Component {
 				params: {
 					search: this.state.searchQuery,
 					// search: "avalon",
-					// type: "boardgame"
 				},
 				xmlToJSON: true
 			}
@@ -51,7 +51,7 @@ class App extends Component {
 			let boardgameTitles = [];
 
 			// limit to finding only 10 games!!!!
-			for (let i = 0; i < 5; i++) {
+			for (let i = 0; i < 10; i++) {
 				if (gameData[i].name.$t !== undefined) {
 					gameIds.push(gameData[i].objectid)
 					boardgameTitles.push(gameData[i].name.$t)
@@ -70,18 +70,12 @@ class App extends Component {
 				gameIds: gameIds,
 				// boardgames: gameData
 			});
-
-			// console.log("hello", this.state.gameIds)
 	
 			this.getGameData()
 		})
 	}
 	
 	getGameData = () => {
-
-		// this.setState({
-		// 	gameInfo : []
-		// })
 
 		// map through state id array
 		this.state.gameIds.map((id) => {
@@ -189,37 +183,23 @@ class App extends Component {
 			// console.log(game.id, game.boardgamecategory.$t);
 			const oneGame = [];
 
-			if (game.boardgamecategory.$t !== undefined) {
-				// console.log(game.boardgamecategory.$t, 'object')
-				oneGame.push(game.boardgamecategory.$t);
-
-			}
-
-
-			// if (game.boardgamecategory !== undefined && game.boardgamecategory.length > 0) {
 			if (game.boardgamecategory.length > 0 && game.boardgamecategory !== undefined) {
 				game.boardgamecategory.map((category) => {
 					oneGame.push(category.$t);
 					return category
 				})
-				// console.log(categories)
 			}
 			else {
-				// console.log('muffin')
-				// oneGame.push('OBJECT')
-				// console.log(game.boardgamecategory.$t, 'hi')
-				oneGame.push(game.boardgamecategory.$t, 'hello')
+				oneGame.push(game.boardgamecategory.$t)
 			}
 			categories.push(oneGame)
-
 			return categories
 
 		});
-		console.log(categories)
 
-		// this.setState({
-		// 	categories: categories
-		// })
+		this.setState({
+			categories: categories
+		})
 		// console.log(this.state.categories)
 
 		
