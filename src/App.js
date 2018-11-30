@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from "axios";
 import Qs from "qs";
+// import Boardgame from './Game';
 // import Boardgame from "./Game"
 
 
@@ -20,7 +21,7 @@ class App extends Component {
 			maxplayers: [],
 			rating: [],
 			categories: [],
-			playtime: []
+			gameImg: []
 		}
 	}
 	
@@ -58,12 +59,9 @@ class App extends Component {
 				}
 			}
 
-
-
 			// console.log(gameIds)
 			// console.log(boardgameTitles)
 			
-
 
 			this.setState({
 				boardgamesTitles: boardgameTitles,
@@ -114,15 +112,8 @@ class App extends Component {
 					this.getGameInfo(); // do I really need this?
 					// console.log('test')
 				})
-
-
 			return "cake"
-
-
 		})
-
-
-
 	}
 
 
@@ -194,7 +185,6 @@ class App extends Component {
 			}
 			categories.push(oneGame)
 			return categories
-
 		});
 
 		this.setState({
@@ -202,8 +192,20 @@ class App extends Component {
 		})
 		// console.log(this.state.categories)
 
+		/// making an array of game images
+		const gameImg = []
+
+		this.state.gameInfo.map((game) => {
+			gameImg.push(game.image)
+			return gameImg
+		});
+
+		this.setState({
+			gameImg: gameImg
+		})
+		// console.log(this.state.gameImg)
+
 		
-		// gameInfo = Array.from(this.state.gameInfo)
 
 
 	}
@@ -218,71 +220,6 @@ class App extends Component {
 
 
 	////////////////////////
-
-
-
-	
-				
-
-
-	getGameInfo2 = () => {
-		// const description = [];
-
-		console.log(this.state.gameInfo, "hello")
-
-		this.state.gameInfo.map((game) => {
-			// console.log(game.id)
-		// 	console.log(game.name[0].value)
-		// 	console.log(game.description)
-		// 	description.push(game.description);
-		// 	return description;
-
-			return 'muffin'
-		})
-		// console.log(description)
-
-		// const categories = [];
-		// console.log(this.state.gameInfo)
-
-
-
-
-		//////// old category finder 
-		// const categories = [];
-
-		// this.state.gameInfo[0].link.map((category) => {
-
-		// 	if (category.type === "boardgamecategory") {
-		// 		// console.log(category.value)
-		// 		categories.push(category.value)
-		// 	}
-
-		// 	this.setState({
-		// 		categories: categories
-		// 	})
-			
-		// 	return 'cake'
-		// })
-
-
-
-
-
-
-	};
-
-
-	// getGameInfo = () => {
-	// 	const description = [];
-	// 	this.state.gameInfo.map((game) => {
-	// 		description.push(game.description);
-	// 		return description;
-	// 	})
-	// }//getgameinfo
-
-
-
-
 
 
 
@@ -331,13 +268,37 @@ class App extends Component {
 				</form>
 
 
-				{/* <Boardgame 
-				// gameTitle={this.state.boardgamesTitles} 
-				// gameId={this.state.gameIds} 
-				// gameFound={this.state.boardgames}
-				// gameInfo={this.state.gameInfo}
-				gameInfo={this.state.newState}
-				/> */}
+				{/* game results */}
+
+				{/* <Boardgame gameInfo={this.state.gameInfo} /> */}
+				
+
+
+				{this.state.gameInfo.map((game, i) => {
+					return (
+						<div key={game.objectid}>
+							<h2>{this.state.boardgamesTitles[i]}</h2>
+							<img src={game.image} alt="" />
+							<p>Players: {game.minplayers} - {game.maxplayers}</p>
+							{/* <p>Categories: {game.boardgamecategory} </p> */}
+							<p>Rating: 
+							{ (game.statistics.ratings.average === "0") ?
+							" 0"
+							:
+								" " + (parseFloat(game.statistics.ratings.average)).toFixed(2)}
+							 /10</p>
+
+						</div>
+					)
+				}
+				)}	
+
+
+
+
+
+
+
 
 		
 
