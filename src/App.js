@@ -11,13 +11,15 @@ class App extends Component {
 		super();
 		this.state = {
 			searchQuery: "",
-			boardgames: [],
+			// boardgames: [],
 			boardgameTitles: [],
 			gameIds: [],
 			gameInfo: [],
 			description: [],
-			categories: [],
-			newState: []
+			minplayers: [],
+			maxplayers: [],
+			rating: [],
+			categories: []
 		}
 	}
 	
@@ -34,8 +36,8 @@ class App extends Component {
 			params: {
 				reqUrl: "https://www.boardgamegeek.com/xmlapi/search",
 				params: {
-					// search: this.state.searchQuery,
-					search: "avalon",
+					search: this.state.searchQuery,
+					// search: "avalon",
 					// type: "boardgame"
 				},
 				xmlToJSON: true
@@ -49,12 +51,17 @@ class App extends Component {
 			let boardgameTitles = [];
 
 			// limit to finding only 10 games!!!!
-			for (let i = 0; i < gameData.length; i++) {
-				gameIds.push(gameData[i].objectid)
-				boardgameTitles.push(gameData[i].name.$t)
+			for (let i = 0; i < 5; i++) {
+				if (gameData[i].name.$t !== undefined) {
+					gameIds.push(gameData[i].objectid)
+					boardgameTitles.push(gameData[i].name.$t)
+				}
 			}
-			console.log(gameIds)
-			console.log(boardgameTitles)
+
+
+
+			// console.log(gameIds)
+			// console.log(boardgameTitles)
 			
 
 
@@ -66,13 +73,176 @@ class App extends Component {
 
 			// console.log("hello", this.state.gameIds)
 	
-			// this.getGameData()
+			this.getGameData()
+		})
+	}
+	
+	getGameData = () => {
 
-			
+		// this.setState({
+		// 	gameInfo : []
+		// })
+
+		// map through state id array
+		this.state.gameIds.map((id) => {
+			axios({
+				url: 'https://proxy.hackeryou.com',
+				dataResponse: 'json',
+				method: 'GET',
+				paramsSerializer: function (params) {
+					return Qs.stringify(params, { arrayFormat: 'brackets' })
+				},
+				params: {
+					reqUrl: `https://www.boardgamegeek.com/xmlapi/boardgame/${id}`,
+					params: {
+						stats: 1,
+					},
+					xmlToJSON: true
+				}
+			})
+
+				.then((info) => {
+					// console.log('returning', info.data.boardgames.boardgame)
+
+					const gameInfo = info.data.boardgames.boardgame
+
+					// making general array of all game info
+					const copyArray = Array.from(this.state.gameInfo);
+
+					copyArray.push(gameInfo);
+					// console.log(copyArray)
+
+					this.setState({
+						gameInfo: copyArray
+					})
+
+
+					this.getGameInfo(); // do I really need this?
+					// console.log('test')
+				})
+
+
+			return "cake"
+
+
 		})
 
 
+
 	}
+
+
+
+	getGameInfo = () => {
+
+
+		/// making an array of min players 
+		const minplayers = []
+		
+		this.state.gameInfo.map((game) => {
+			minplayers.push(game.minplayers);
+			return minplayers
+		});
+
+		this.setState({
+			minplayers: minplayers
+		})
+		// console.log(this.state.minplayers)
+
+		/// making an array of max players 
+		const maxplayers = []
+
+		this.state.gameInfo.map((game) => {
+			maxplayers.push(game.maxplayers);
+			return maxplayers
+		});
+
+		this.setState({
+			maxplayers: maxplayers
+		})
+		// console.log(this.state.maxplayers)
+
+
+		/// making an array of average rating
+		const rating = []
+
+		this.state.gameInfo.map((game) => {
+
+			if (game.statistics.ratings.average === "0") {
+				rating.push("0")
+			} else {
+				rating.push(parseFloat(game.statistics.ratings.average).toFixed(2));
+			}
+			return rating
+		});
+
+		this.setState({
+			rating: rating
+		})
+		// console.log(this.state.rating)
+
+
+		/// making an array of categories 
+		const categories = []
+
+		this.state.gameInfo.map((game) => {
+			// console.log(game.id, game.boardgamecategory.$t);
+			const oneGame = [];
+
+			if (game.boardgamecategory.$t !== undefined) {
+				// console.log(game.boardgamecategory.$t, 'object')
+				oneGame.push(game.boardgamecategory.$t);
+
+			}
+
+
+			// if (game.boardgamecategory !== undefined && game.boardgamecategory.length > 0) {
+			if (game.boardgamecategory.length > 0 && game.boardgamecategory !== undefined) {
+				game.boardgamecategory.map((category) => {
+					oneGame.push(category.$t);
+					return category
+				})
+				// console.log(categories)
+			}
+			else {
+				// console.log('muffin')
+				// oneGame.push('OBJECT')
+				// console.log(game.boardgamecategory.$t, 'hi')
+				oneGame.push(game.boardgamecategory.$t, 'hello')
+			}
+			categories.push(oneGame)
+
+			return categories
+
+		});
+		console.log(categories)
+
+		// this.setState({
+		// 	categories: categories
+		// })
+		// console.log(this.state.categories)
+
+		
+		// gameInfo = Array.from(this.state.gameInfo)
+
+
+	}
+
+
+	
+
+
+
+
+
+
+
+	////////////////////////
+
+
+
+	
+				
 
 
 	getGameInfo2 = () => {
@@ -147,6 +317,10 @@ class App extends Component {
 	// add games for users
 	handleSubmit = (e) => {
 		e.preventDefault();
+		
+		this.setState({
+			gameInfo: []
+		})
 
 		this.getGames();
 

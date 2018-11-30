@@ -7,8 +7,7 @@ const Boardgame = (props) => {
 			{props.gameInfo.map(game => {
 				// console.log(game)
 				return (
-					<div
-						key={game.id}>
+					<div key={game.id}>
 						<h2>{game.name.value}</h2>
 					</div>
 					
