@@ -12,21 +12,35 @@ class App extends Component {
 		super();
 		this.state = {
 			searchQuery: "",
-			// boardgames: [],
+			boardgamesTitles: [],
+			topGames: ["174430", "167791", "12333", "187645", "169786", "220308"],
+			gameIds: [],
+			gameInfo: [],
+			// description: [],
+			minplayers: [],
+			maxplayers: [],
+			rating: [],
+			categories: [],
+			gameImg: [],
+		}
+	}
+
+
+
+	getGames = () => { 
+		console.log('muffin')
+		
+		this.setState({
 			boardgameTitles: [],
 			gameIds: [],
 			gameInfo: [],
-			description: [],
+			// description: [],
 			minplayers: [],
 			maxplayers: [],
 			rating: [],
 			categories: [],
 			gameImg: []
-		}
-	}
-	
-
-	getGames = () => {
+		})
 
 		axios({
 			url: 'https://proxy.hackeryou.com',
@@ -39,34 +53,48 @@ class App extends Component {
 				reqUrl: "https://www.boardgamegeek.com/xmlapi/search",
 				params: {
 					search: this.state.searchQuery,
-					// search: "avalon",
+					type: "boardgame"
 				},
 				xmlToJSON: true
 			}
 		}).then((res) => {
 			// console.log(res)
 			const gameData = res.data.boardgames.boardgame
-			// console.log(gameData)				
+			// console.log(typeof gameData)	
+			// console.log(gameData.length)			
 
 			let gameIds = [];
 			let boardgameTitles = [];
-
-			// limit to finding only 10 games!!!!
-			for (let i = 0; i < 10; i++) {
-				if (gameData[i].name.$t !== undefined) {
-					gameIds.push(gameData[i].objectid)
-					boardgameTitles.push(gameData[i].name.$t)
+			
+			// multiple games found, shows as array of objects
+			if (gameData.length > 10) { // current limit to getting data for 10 games
+				for (let i = 0; i < 10; i++) {
+					if (gameData[i].name.$t !== undefined) {
+						gameIds.push(gameData[i].objectid)
+						boardgameTitles.push(gameData[i].name.$t)
+					}
+				}
+			} else {
+				for (let i = 0; i < gameData.length; i++) {
+					if (gameData[i].name.$t !== undefined) {
+						gameIds.push(gameData[i].objectid)
+						boardgameTitles.push(gameData[i].name.$t)
+					}
 				}
 			}
 
-			// console.log(gameIds)
-			// console.log(boardgameTitles)
+			// single game found, length shows up as undefined
+			// type is object instead of array of objects
+			if (gameData.length === undefined) {
+				gameIds.push(gameData.objectid)
+				boardgameTitles.push(gameData.name.$t)
+			}
+
 			
 
 			this.setState({
 				boardgamesTitles: boardgameTitles,
 				gameIds: gameIds,
-				// boardgames: gameData
 			});
 	
 			this.getGameData()
@@ -74,7 +102,6 @@ class App extends Component {
 	}
 	
 	getGameData = () => {
-
 		// map through state id array
 		this.state.gameIds.map((id) => {
 			axios({
@@ -94,7 +121,7 @@ class App extends Component {
 			})
 
 				.then((info) => {
-					// console.log('returning', info.data.boardgames.boardgame)
+					// console.log('returning') //info.data.boardgames.boardgame)
 
 					const gameInfo = info.data.boardgames.boardgame
 
@@ -107,6 +134,7 @@ class App extends Component {
 					this.setState({
 						gameInfo: copyArray
 					})
+					// console.log(this.state.gameInfo)
 
 
 					this.getGameInfo(); // do I really need this?
@@ -211,8 +239,12 @@ class App extends Component {
 	}
 
 
-	
+	randomTopGame = () => {
+		// let randomGame = this.state.topGames[Math.floor(Math.random() * 6)];
 
+
+	}
+	
 
 
 
@@ -235,9 +267,9 @@ class App extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		
-		this.setState({
-			gameInfo: []
-		})
+		// this.setState({
+		// 	gameInfo: []
+		// })
 
 		this.getGames();
 
@@ -268,30 +300,34 @@ class App extends Component {
 				</form>
 
 
+
+
 				{/* game results */}
 
-				{/* <Boardgame gameInfo={this.state.gameInfo} /> */}
 				
+				<div className="GameSection wrapper">
+					{this.state.gameInfo.map((game, i) => {
+						return (
+							<div key={game.objectid} className="foundGame">
+								{/* <div> */}
+								<img src={game.image} alt="" />
+								<h2>{this.state.boardgamesTitles[i]}</h2>
+								<p>Players: {game.minplayers} - {game.maxplayers}</p>
+								{/* <p>Categories: {game.boardgamecategory} </p> */}
+								<p>Rating:
+								{(game.statistics.ratings.average === "0") ?
+										" 0"
+										:
+										" " + (parseFloat(game.statistics.ratings.average)).toFixed(2)}
+									/10</p>
+								{/* </div> */}
 
+							</div>
+						)
+					}
+					)}	
+				</div>
 
-				{this.state.gameInfo.map((game, i) => {
-					return (
-						<div key={game.objectid}>
-							<h2>{this.state.boardgamesTitles[i]}</h2>
-							<img src={game.image} alt="" />
-							<p>Players: {game.minplayers} - {game.maxplayers}</p>
-							{/* <p>Categories: {game.boardgamecategory} </p> */}
-							<p>Rating: 
-							{ (game.statistics.ratings.average === "0") ?
-							" 0"
-							:
-								" " + (parseFloat(game.statistics.ratings.average)).toFixed(2)}
-							 /10</p>
-
-						</div>
-					)
-				}
-				)}	
 
 
 
