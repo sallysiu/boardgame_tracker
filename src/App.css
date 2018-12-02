@@ -56,9 +56,8 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary
 
 img {
   /* max-width: 350px; */
-  width: 80%;
+  /* width: 80%; */
   /* max-height: 300px; */
-  display: inline-block;
 }
 
 .wrapper {
@@ -70,7 +69,8 @@ img {
 .GameSection {
   /* border: 2px dashed green; */
   margin: 50px auto;
-  padding: 0 2%;
+  padding: 0 2% 0 2%;
+   /* 0 25px 1% */
   display: flex;
   /* justify-content: space-between; */
   align-content: flex-start;
@@ -81,10 +81,21 @@ img {
 
 .foundGame {
   display: block;
-  /* border: 2px solid blue; */
-  text-align: center;
-  width: 33.33%;
+  border: 2px solid grey;
+  border-radius: 10px;
+  background: whitesmoke;
+  text-align: left;
+  width: 31.33%;
   /* max-height: 800px; */
   padding: 25px;
+  margin: 0 1% 25px 1%;
   justify-self: flex-start;
+  
+}
+
+.foundGame img {
+  display: block;
+  margin: 0 auto;
+  max-width: 90%;
+
 }
