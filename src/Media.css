@@ -1,0 +1,32 @@
+/* Portrait tablet and small desktops */
+@media (max-width: 940px) {
+	.foundGame {
+		
+		width: 48%;
+
+	}
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 768px) {
+	.foundGame {
+		width: 100%;
+	}
+
+	input[type=text] {
+	display: block;
+	padding: 10px;
+	width: 80%;
+	border: none;
+	border-bottom:rgb(4, 4, 59) 0.5px solid;
+	margin: 0 auto;
+	}
+
+	input[type=submit] {
+	display: inline-block;
+	margin-top: 20px;
+	border-radius: 5px;
+	}
+
+
+}

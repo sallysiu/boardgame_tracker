@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from "axios";
 import Qs from "qs";
-// import Boardgame from './Game';
-// import Boardgame from "./Game"
+import Boardgame from './Game';
+import "./Media.css"
 
 
 
@@ -13,22 +13,21 @@ class App extends Component {
 		this.state = {
 			searchQuery: "",
 			boardgamesTitles: [],
-			topGames: ["174430", "167791", "12333", "187645", "169786", "220308"],
 			gameIds: [],
 			gameInfo: [],
 			// description: [],
 			minplayers: [],
 			maxplayers: [],
 			rating: [],
-			categories: [],
+			// categories: [],
 			gameImg: [],
+			// publisher: []
 		}
 	}
 
 
 
 	getGames = () => { 
-		console.log('muffin')
 		
 		this.setState({
 			boardgameTitles: [],
@@ -39,7 +38,8 @@ class App extends Component {
 			maxplayers: [],
 			rating: [],
 			categories: [],
-			gameImg: []
+			gameImg: [],
+			publisher: []
 		})
 
 		axios({
@@ -137,23 +137,40 @@ class App extends Component {
 					// console.log(this.state.gameInfo)
 
 
-					this.getGameInfo(); // do I really need this?
-					// console.log('test')
+					// this.getGameInfo();
 				})
-			return "cake"
+			return this.state.gameInfo
 		})
 	}
 
 
 
-	getGameInfo = () => {
+	getGameInfo = () => {      /// purpose of making these to enter into state was for incorporating firebase as stretch goal, currently not being used
+		/// making an array of game images        			//// ISSSUE
+		const gameImg = []
+
+		this.state.gameInfo.map((game) => {
+			gameImg.push(game.image)
+			return 'gameImg'
+		});
+
+		this.setState({
+			gameImg: gameImg
+		})
+		console.log(this.state.gameImg)
+
+
 
 
 		/// making an array of min players 
 		const minplayers = []
 		
 		this.state.gameInfo.map((game) => {
-			minplayers.push(game.minplayers);
+			if (game.minplayers === "0") {
+				minplayers.push("N/A");
+			} else {
+				minplayers.push(game.minplayers);
+			}
 			return minplayers
 		});
 
@@ -162,11 +179,17 @@ class App extends Component {
 		})
 		// console.log(this.state.minplayers)
 
+
+
 		/// making an array of max players 
 		const maxplayers = []
 
 		this.state.gameInfo.map((game) => {
-			maxplayers.push(game.maxplayers);
+			if (game.maxplayers === "0") {
+				maxplayers.push("N/A")
+			} else {
+				maxplayers.push(game.maxplayers);
+			}
 			return maxplayers
 		});
 
@@ -220,40 +243,10 @@ class App extends Component {
 		})
 		// console.log(this.state.categories)
 
-		/// making an array of game images
-		const gameImg = []
-
-		this.state.gameInfo.map((game) => {
-			gameImg.push(game.image)
-			return gameImg
-		});
-
-		this.setState({
-			gameImg: gameImg
-		})
-		// console.log(this.state.gameImg)
-
 		
 
 
 	}
-
-
-	randomTopGame = () => {
-		// let randomGame = this.state.topGames[Math.floor(Math.random() * 6)];
-
-
-	}
-	
-
-
-
-
-
-
-	////////////////////////
-
-
 
 
 	handleChange = (e) => {
@@ -266,11 +259,7 @@ class App extends Component {
 	// add games for users
 	handleSubmit = (e) => {
 		e.preventDefault();
-		
-		// this.setState({
-		// 	gameInfo: []
-		// })
-
+	
 		this.getGames();
 
 		// clear the form
@@ -286,15 +275,16 @@ class App extends Component {
 	render() {
 		return (
 			<div className="App">
-				<h1>Games shelf</h1>
+				<h1>Get Your Game On!</h1>
 
 				<form action="" onSubmit={this.handleSubmit}>
-					<label htmlFor="searchQuery">Search for board games:</label>
+					<label htmlFor="searchQuery" className="visuallyhidden">Search for board games: </label>
 					<input 
 					onChange={this.handleChange} 
 					value={this.state.searchQuery} 
 					type="text" 
 					id="searchQuery"
+					placeholder="Search for board games"
 					/>
 					<input type="submit" value="Find games" />
 				</form>
@@ -306,37 +296,46 @@ class App extends Component {
 
 				
 				<div className="GameSection wrapper">
-					{this.state.gameInfo.map((game, i) => {
+					{this.state.gameInfo.map((game) => {
+						// console.log(game.boardgamecategory)
 						return (
-							<div key={game.objectid} className="foundGame">
-								{/* <div> */}
-								<img src={game.image} alt="" />
-								<h2>{this.state.boardgamesTitles[i]}</h2>
-								<p>Players: {game.minplayers} - {game.maxplayers}</p>
-								{/* <p>Categories: {game.boardgamecategory} </p> */}
-								<p>Rating:
-								{(game.statistics.ratings.average === "0") ?
-										" 0"
-										:
-										" " + (parseFloat(game.statistics.ratings.average)).toFixed(2)}
-									/10</p>
-								{/* </div> */}
 
-							</div>
+							<Boardgame 
+								id={game.objectid}
+								image={game.image}
+								title={game.name.$t || game.name.map((name) => {
+									if (name.primary === "true") {
+										return name.$t
+									}
+									return game.name.$t
+								})
+								}
+
+								minplayers={game.minplayers}
+								maxplayers={game.maxplayers}
+								categories={game.boardgamecategory.$t ||
+									 game.boardgamecategory.map((category) => {
+									// const categories = [];
+									// categories.push(category.$t)
+										return category.$t	
+								})
+							}
+
+								rating={(game.statistics.ratings.average === "0") ?
+									" 0"
+									:
+									" " + (parseFloat(game.statistics.ratings.average)).toFixed(2)}
+							/>
+							
+
+
+
 						)
 					}
 					)}	
 				</div>
 
 
-
-
-
-
-
-
-
-		
 
 			</div>
 		);
