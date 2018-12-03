@@ -275,7 +275,7 @@ class App extends Component {
 	render() {
 		return (
 			<div className="App">
-				<h1>Get Your Game On!</h1>
+				<h1 className="wrapper">Get Your Game On!</h1>
 
 				<form action="" onSubmit={this.handleSubmit}>
 					<label htmlFor="searchQuery" className="visuallyhidden">Search for board games: </label>

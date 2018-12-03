@@ -7,7 +7,7 @@ class Boardgame extends Component {
 	categories = () => {
 
 		if (typeof this.props.categories === "string") {
-			console.log('SINGLE', this.props.categories)
+			// console.log('SINGLE', this.props.categories)
 			return (
 				<li>
 					{this.props.categories}
